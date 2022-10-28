@@ -73,41 +73,65 @@ def main():
             if get_first_num(i[1])<=int(args.end) and get_first_num(i[1])>=int(args.beg):
                 v_custom.append(i)
         v = v_custom
+        print(f'from {args.beg} to {args.end} volumes')
     else:
         print('Full volume mode')
+
+    #test output
+    # for i in v:
+    #     print(f'{i[1]} {i[0]}')
 
 
 
 
 
     def downloader(link,cname):
-        browser.get(link)
+
+
+
+        # если есть несколько переводов
+        if 'bid' in link:
+            tmp = f'{link}&page=1'
+        else:
+            tmp = f'{link}?page=1'
+        print(tmp)
+        browser.get(tmp)
+
         pages = browser.find_elements(By.XPATH,'//div[@data-p]')
         # page_count = int(pages[-1].get_attribute('data-p'))
         page_count = len(pages)
-        print(len(pages))
+        print(f'{len(pages)} pages')
 
-        cname=cname.replace('.','')
+        cname=cname.replace('.',' ')
         cname = cname.replace(':', '')
+        cname = cname.replace('?', '')
 
-        os.mkdir(f'{name}/{cname}')
+        if not os.path.exists(f'{name}/{cname}'):
+            os.mkdir(f'{name}/{cname}')
 
 
         for i in range(1,page_count+1):
-            url = f'{link}?page={i}'
-            print(url)
-            browser.get(url)
-            element = browser.find_element(By.XPATH, f'//div[@data-p="{i}"]')
-            #
-            img = element.find_element(By.TAG_NAME, 'img').get_attribute('src')
-            save_img(img,i,f'{name}/{cname}')
+            #если есть несколько переводов
+            if 'bid' in link:
+                url = f'{link}&page={i}'
+                print(url)
+            else:
+                url = f'{link}?page={i}'
+                print(url)
+
+
+            # browser.get(url)
+            # element = browser.find_element(By.XPATH, f'//div[@data-p="{i}"]')
+            # #
+            # img = element.find_element(By.TAG_NAME, 'img').get_attribute('src')
+            # save_img(img,i,f'{name}/{cname}')
 
         print(f'chapter {cname} the end')
 
     count=1
     for i in v:
         downloader(i[0],i[1])
-        print(f'{count}/{len(v)}')
+        print(f'{count}/{len(v)} volumes')
         count+=1
         time.sleep(4)
 
@@ -116,5 +140,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
 
 
