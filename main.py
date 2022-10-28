@@ -120,11 +120,11 @@ def main():
                 print(url)
 
 
-            # browser.get(url)
-            # element = browser.find_element(By.XPATH, f'//div[@data-p="{i}"]')
-            # #
-            # img = element.find_element(By.TAG_NAME, 'img').get_attribute('src')
-            # save_img(img,i,f'{name}/{cname}')
+            browser.get(url)
+            element = browser.find_element(By.XPATH, f'//div[@data-p="{i}"]')
+            #
+            img = element.find_element(By.TAG_NAME, 'img').get_attribute('src')
+            save_img(img,i,f'{name}/{cname}')
 
         print(f'chapter {cname} the end')
 
