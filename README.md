@@ -7,6 +7,8 @@
   
   [yaoilib](https://yaoilib.me/)
   
+  P.S. работает только с русским(или СНГ) ip
+  
  -------
  TO DO:
  
