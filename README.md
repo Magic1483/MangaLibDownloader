@@ -11,13 +11,13 @@
   
  -------
  # Usage
- 
+ ```
  python main.py '**link to mangalib chapters**'
- 
+ ```
  or 
- 
+ ```
  python main.py '**link to mangalib chapters**' --beg **begin chapter** --end **end chapter**
- 
+ ```
  
  ------
  TO DO:
