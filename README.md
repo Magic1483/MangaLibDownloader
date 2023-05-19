@@ -7,7 +7,9 @@
   
   [yaoilib](https://yaoilib.me/)
   
-  P.S. работает только с русским(или СНГ) ip
+  [hentailib](https://hentailib.me/)
+  
+
   
  -------
  # Usage
@@ -18,8 +20,11 @@
  ```
  python main.py '**link to mangalib chapters**' --beg **begin chapter** --end **end chapter**
  ```
- 
+ Для скачивания материалов с ограничениями нужно использовать cookie,в соответствии с сайтом.
+ ```
+ python main.py '**link to mangalib chapters**' --beg **begin chapter** --end **end chapter** --cookie 'path/to/cookie.json'
+ ```
  ------
  TO DO:
  
- .добавить hentailib, animelib, ranobelib
+ .добавить  animelib, ranobelib
