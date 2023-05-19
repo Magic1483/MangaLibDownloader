@@ -5,14 +5,22 @@ import os
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+from selenium.webdriver.common.action_chains import ActionChains
 import time
 from bs4 import BeautifulSoup
 import requests
 
 def save_img(link,name,folder):
-  img_data = requests.get(link).content
-  with open(f'{folder}/{name}.jpg', 'wb') as handler:
-      handler.write(img_data)
+    img_data = requests.get(link).content
+    with open(f'{folder}/{name}.png', 'wb') as handler:
+        handler.write(img_data)
+  
+  
+def SaveElementScreenShoot(element,name,folder):
+    element.screenshot(f'{folder}/{name}.png')
 
 def get_first_num(t):
     tmp = t.split(' ')
@@ -21,6 +29,19 @@ def get_first_num(t):
             return (int(i))
             break
 
+def LoadCookieJSON(driver,cookie_file):
+    # Load JSON Cookie
+    with open(cookie_file) as f:
+        cookie_dict = json.load(f)
+
+    time.sleep(5)
+    #set cookie from file
+    driver.delete_all_cookies()
+    for i in cookie_dict:
+        del i['sameSite']
+        driver.add_cookie(i)
+
+    driver.refresh()
 
 #mangalib downloader
 def main():
@@ -29,6 +50,7 @@ def main():
     parser.add_argument("url")
     parser.add_argument('--beg',default='non',help='the begin volume')
     parser.add_argument('--end',default='non',help='the end volume')
+    parser.add_argument('--cookie',default='non',help='user cookie auth')
     args = parser.parse_args()
     url = args.url
 
@@ -42,8 +64,12 @@ def main():
     DRIVER_PATH = 'chromedriver.exe'
 
     browser = webdriver.Chrome(DRIVER_PATH,options=Options)
+    wait = WebDriverWait(browser, 10)
 
     browser.get(url)
+    if args.cookie!='non':
+        LoadCookieJSON(driver=browser,cookie_file=args.cookie)
+
     browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 
@@ -55,6 +81,8 @@ def main():
     print(name.text)
     name = name.text.replace(':','')
     name = name.replace('.', '')
+    name = name.replace(',', '')
+    
 
     #Create book folder
     if not os.path.exists(name):
@@ -87,7 +115,7 @@ def main():
 
     def downloader(link,cname):
 
-
+        actions = ActionChains(browser)
 
         # если есть несколько переводов
         if 'bid' in link:
@@ -105,6 +133,9 @@ def main():
         cname=cname.replace('.',' ')
         cname = cname.replace(':', '')
         cname = cname.replace('?', '')
+        cname = cname.replace('-', ' ')
+
+        
 
         if not os.path.exists(f'{name}/{cname}'):
             os.mkdir(f'{name}/{cname}')
@@ -120,11 +151,27 @@ def main():
                 print(url)
 
 
-            browser.get(url)
+            # browser.get(url)
+            
+            wait.until(EC.visibility_of_element_located((By.XPATH,f'//div[@data-p="{i}"]')))
+            
+            
             element = browser.find_element(By.XPATH, f'//div[@data-p="{i}"]')
-            #
-            img = element.find_element(By.TAG_NAME, 'img').get_attribute('src')
-            save_img(img,i,f'{name}/{cname}')
+            
+            img = element.find_element(By.TAG_NAME, 'img')
+
+            if 'hentailib' in url:
+                #close warn button 
+                try:
+                    browser.find_element(By.XPATH,'//div[@class="toast-item__close"]').click()
+                except: pass
+                time.sleep(1)
+                SaveElementScreenShoot(img,i,f'{name}/{cname}')
+            else:
+
+                save_img(img.get_attribute('src'),i,f'{name}/{cname}')
+
+            actions.send_keys(Keys.ARROW_RIGHT).perform()
 
         print(f'chapter {cname} the end')
 
